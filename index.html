@@ -2,23 +2,27 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Vandi Agent</title>
+<title>Vandi Agent - All India</title>
 <style>
 body{font-family:sans-serif;background:#0f172a;color:white;padding:16px}
-select,input{padding:12px;width:100%;border-radius:8px;margin:6px 0}
+input{padding:12px;width:100%;border-radius:8px;margin:6px 0;box-sizing:border-box}
 .card{background:white;color:black;padding:14px;border-radius:12px;margin-top:12px}
 button{background:#22c55e;border:0;padding:13px;width:100%;border-radius:10px;font-size:16px;font-weight:bold;margin-top:10px}
 .book{background:#2563eb;color:white;border:0;padding:10px;width:100%;border-radius:8px;margin-top:8px;font-weight:bold}
+small{color:#a3a3a3}
 </style>
 </head>
 <body>
 <h1>🚆 Vandi Agent</h1>
+<small>All India Stations - Type panni select pannu</small><br><br>
 
 <label>From:</label>
-<select id="from"></select>
+<input id="from" list="stations" placeholder="Ex: Coimbatore, Delhi, Mumbai..." value="Coimbatore">
 
 <label>To:</label>
-<select id="to"></select>
+<input id="to" list="stations" placeholder="Ex: Chennai, Bangalore..." value="Chennai">
+
+<datalist id="stations"></datalist>
 
 <label>Date:</label>
 <input type="date" id="date" value="2026-12-24">
@@ -27,15 +31,16 @@ button{background:#22c55e;border:0;padding:13px;width:100%;border-radius:10px;fo
 <div id="result"></div>
 
 <script>
-let stations = ["Chennai","Coimbatore","Tirunelveli","Madurai","Trichy","Salem","Erode","Thanjavur","Vellore","Kanyakumari","Tuticorin","Dindigul","Villupuram","Karur"];
-let fromSel = document.getElementById("from");
-let toSel = document.getElementById("to");
-stations.forEach(s=>{
-fromSel.innerHTML += "<option>"+s+"</option>";
-toSel.innerHTML += "<option>"+s+"</option>";
-});
-fromSel.value = "Coimbatore";
-toSel.value = "Chennai";
+let stations = [
+"Chennai Central","Chennai Egmore","Tambaram","Coimbatore Junction","Tirunelveli Junction","Madurai Junction","Trichy Junction","Salem Junction","Erode Junction","Thanjavur Junction","Vellore Katpadi","Kanyakumari","Tuticorin","Dindigul","Villupuram","Karur","Tiruppur","Nagercoil","Karaikudi","Rameswaram",
+"New Delhi","Old Delhi","Hazrat Nizamuddin","Mumbai Central","Mumbai CSMT","Dadar","Thane","Pune Junction","Ahmedabad Junction","Surat","Vadodara","Jaipur Junction","Jodhpur","Udaipur","Ajmer",
+"Howrah Junction","Sealdah","Kolkata","Patna Junction","Gaya","Lucknow","Kanpur Central","Varanasi Junction","Prayagraj","Bhopal Junction","Indore Junction","Gwalior",
+"Bangalore City","Yesvantpur","Mysuru Junction","Hubballi","Mangaluru Central","Kochi Ernakulam","Thiruvananthapuram Central","Kozhikode","Kannur","Palakkad",
+"Hyderabad Deccan","Secunderabad Junction","Vijayawada Junction","Visakhapatnam","Guntur","Warangal","Tirupati","Nellore","Rajahmundry",
+"Chandigarh","Amritsar Junction","Ludhiana","Jammu Tawi","Dehradun","Haridwar","Rishikesh","Agra Cantt","Mathura Junction","Jhansi Junction","Nagpur Junction","Nashik Road","Aurangabad","Kolhapur","Solapur","Belagavi","Guwahati","Dibrugarh","Bhubaneswar","Cuttack","Puri","Ranchi","Raipur Junction","Bilaspur Junction","Jabalpur","Ujjain","Kota Junction","Bikaner","Rajkot","Bhavnagar","Goa Madgaon","Vasco Da Gama"
+];
+let dl = document.getElementById("stations");
+stations.forEach(s=>{ let o=document.createElement("option"); o.value=s; dl.appendChild(o); });
 
 function bookTrain(details){
 navigator.clipboard.writeText(details);
@@ -44,31 +49,28 @@ window.open('https://www.irctc.co.in/nget/train-search','_blank');
 }
 
 function search(){
-let from = fromSel.value;
-let to = toSel.value;
+let from = document.getElementById("from").value.trim();
+let to = document.getElementById("to").value.trim();
 let date = document.getElementById("date").value;
-if(from==to){ document.getElementById("result").innerHTML = "<div class='card'>From-um To-vum ore station ah iruka koodathu!</div>"; return; }
+if(!from || !to){ document.getElementById("result").innerHTML="<div class='card'>From-um To-vum type pannu!</div>"; return; }
+if(from.toLowerCase()==to.toLowerCase()){ document.getElementById("result").innerHTML="<div class='card'>From-um To-vum ore station ah iruka koodathu!</div>"; return; }
 let html = "<h3>"+from+" → "+to+" | "+date+"</h3>";
 
-if(from=="Coimbatore" && to=="Chennai"){
+if(from.includes("Coimbatore") && to.includes("Chennai")){
 html += "<div class='card'><b>12676 Kovai Express</b><br>06:10 AM → 01:45 PM<br><b>₹160 Sleeper | ₹480 AC</b><button class='book' onclick=\"bookTrain('12676 Kovai Express, Coimbatore to Chennai, "+date+"')\">Book on IRCTC →</button></div>";
 html += "<div class='card'><b>12640 Cheran Express</b><br>10:00 PM → 05:05 AM<br><b>₹180 Sleeper | ₹520 AC</b><button class='book' onclick=\"bookTrain('12640 Cheran Express, Coimbatore to Chennai, "+date+"')\">Book on IRCTC →</button></div>";
 html += "<div class='card'><b>20627 Vande Bharat</b><br>06:15 AM → 01:40 PM<br><b>₹755 Chair Car</b><button class='book' onclick=\"bookTrain('20627 Vande Bharat, Coimbatore to Chennai, "+date+"')\">Book on IRCTC →</button></div>";
 }
-else if(from=="Tirunelveli" && to=="Chennai"){
-html += "<div class='card'><b>12632 Nellai Express</b><br>07:15 PM → 04:15 AM<br><b>₹210 Sleeper | ₹560 AC</b><button class='book' onclick=\"bookTrain('12632 Nellai Express, Tirunelveli to Chennai, "+date+"')\">Book on 【entity-IRCTC¦canonical_name=IRCTC】 →</button></div>";
-html += "<div class='card'><b>12666 Cape - Tambaram Express</b><br>04:00 PM → 05:10 AM<br><b>₹200 Sleeper | ₹540 AC</b><button class='book' onclick=\"bookTrain('12666 Cape Express, Tirunelveli to Chennai, "+date+"')\">Book on IRCTC →</button></div>";
+else if(from.includes("Tirunelveli") && to.includes("Chennai")){
+html += "<div class='card'><b>12632 Nellai Express</b><br>07:15 PM → 04:15 AM<br><b>₹210 Sleeper | ₹560 AC</b><button class='book' onclick=\"bookTrain('12632 Nellai Express, Tirunelveli to Chennai, "+date+"')\">Book on IRCTC →</button></div>";
+html += "<div class='card'><b>12666 Cape - Tambaram Express</b><br>04:00 PM → 05:10 AM<br><b>₹200 Sleeper</b><button class='book' onclick=\"bookTrain('12666 Cape Express, Tirunelveli to Chennai, "+date+"')\">Book on IRCTC →</button></div>";
 }
-else if(from=="Chennai" && to=="Coimbatore"){
-html += "<div class='card'><b>12675 Kovai Express</b><br>06:10 AM → 01:50 PM<br><b>₹160 Sleeper | ₹480 AC</b><button class='book' onclick=\"bookTrain('12675 Kovai Express, Chennai to Coimbatore, "+date+"')\">Book on IRCTC →</button></div>";
-html += "<div class='card'><b>12639 Cheran Express</b><br>10:00 PM → 05:05 AM<br><b>₹180 Sleeper | ₹520 AC</b><button class='book' onclick=\"bookTrain('12639 Cheran Express, Chennai to Coimbatore, "+date+"')\">Book on IRCTC →</button></div>";
-}
-else if(from=="Madurai" && to=="Chennai"){
-html += "<div class='card'><b>12632 Nellai Express (via Madurai)</b><br>08:30 PM → 04:15 AM<br><b>₹190 Sleeper</b><button class='book' onclick=\"bookTrain('Nellai Express, Madurai to Chennai, "+date+"')\">Book on IRCTC →</button></div>";
+else if(from.includes("Madurai") && to.includes("Chennai")){
 html += "<div class='card'><b>12638 Pandian Express</b><br>09:40 PM → 06:05 AM<br><b>₹185 Sleeper</b><button class='book' onclick=\"bookTrain('Pandian Express, Madurai to Chennai, "+date+"')\">Book on IRCTC →</button></div>";
 }
 else {
-html += "<div class='card'><b>"+from+" → "+to+"</b><br>Direct trains list ah IRCTC la paaru.<br>From: "+from+"<br>To: "+to+"<br>Date: "+date+"<button class='book' onclick=\"bookTrain('"+from+" to "+to+", "+date+"')\">Check on IRCTC →</button></div>";
+html += "<div class='card'><b>"+from+" → "+to+"</b><br>Unakku etha route ku trains venumo, atha IRCTC la live ah paakalam.<br><br>From: "+from+"<br>To: "+to+"<br>Date: "+date+"<button class='book' onclick=\"bookTrain('"+from+" to "+to+", "+date+"')\">Check Live Trains on IRCTC →</button></div>";
+html += "<div class='card'>💡 Tip: IRCTC la login pannitu, mela copy panna details ah paste pannidu, full train list varum.</div>";
 }
 document.getElementById("result").innerHTML = html;
 }
