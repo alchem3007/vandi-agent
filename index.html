@@ -68,6 +68,15 @@ html += "<div class='card'><b>12666 Cape - Tambaram Express</b><br>04:00 PM → 
 else if(from.includes("Madurai") && to.includes("Chennai")){
 html += "<div class='card'><b>12638 Pandian Express</b><br>09:40 PM → 06:05 AM<br><b>₹185 Sleeper</b><button class='book' onclick=\"bookTrain('Pandian Express, Madurai to Chennai, "+date+"')\">Book on IRCTC →</button></div>";
 }
+  else if(from.includes("New Delhi") && to.includes("Mumbai")){
+html += "<div class='card'><b>12951 Mumbai Rajdhani Express</b><br>04:35 PM → 08:35 AM<br><b>₹1,300 3AC | ₹2,100 2AC</b><button class='book' onclick=\"bookTrain('12951 Rajdhani, Delhi to Mumbai, "+date+"')\">Book on IRCTC →</button></div>";
+html += "<div class='card'><b>12953 August Kranti Rajdhani</b><br>05:00 PM → 09:30 AM<br><b>₹1,250 3AC</b><button class='book' onclick=\"bookTrain('12953 August Kranti, Delhi to Mumbai, "+date+"')\">Book on IRCTC →</button></div>";
+html += "<div class='card'><b>12247 Bandra Terminus Yuva Express</b><br>06:00 PM → 10:00 AM<br><b>₹750 Sleeper</b><button class='book' onclick=\"bookTrain('12247 Yuva Express, Delhi to Mumbai, "+date+"')\">Book on IRCTC →</button></div>";
+}
+else if(from.includes("Bangalore") && to.includes("Chennai")){
+html += "<div class='card'><b>12640 Brindavan Express</b><br>07:50 AM → 01:40 PM<br><b>₹120 2S | ₹450 CC</b><button class='book' onclick=\"bookTrain('Brindavan Express, Bangalore to Chennai, "+date+"')\">Book on IRCTC →</button></div>";
+html += "<div class='card'><b>12028 Shatabdi Express</b><br>06:00 AM → 11:00 AM<br><b>₹600 CC</b><button class='book' onclick=\"bookTrain('Shatabdi, Bangalore to Chennai, "+date+"')\">Book on IRCTC →</button></div>";
+}
 else {
 html += "<div class='card'><b>"+from+" → "+to+"</b><br>Unakku etha route ku trains venumo, atha IRCTC la live ah paakalam.<br><br>From: "+from+"<br>To: "+to+"<br>Date: "+date+"<button class='book' onclick=\"bookTrain('"+from+" to "+to+", "+date+"')\">Check Live Trains on IRCTC →</button></div>";
 html += "<div class='card'>💡 Tip: IRCTC la login pannitu, mela copy panna details ah paste pannidu, full train list varum.</div>";
