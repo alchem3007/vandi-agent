@@ -8,6 +8,7 @@ body{font-family:sans-serif;background:#0f172a;color:white;padding:16px}
 select,input{padding:12px;width:100%;border-radius:8px;margin:6px 0}
 .card{background:white;color:black;padding:14px;border-radius:12px;margin-top:12px}
 button{background:#22c55e;border:0;padding:13px;width:100%;border-radius:10px;font-size:16px;font-weight:bold;margin-top:10px}
+.book{background:#2563eb;color:white;text-decoration:none;display:block;text-align:center;padding:10px;border-radius:8px;margin-top:8px;font-weight:bold}
 </style>
 </head>
 <body>
@@ -26,7 +27,6 @@ button{background:#22c55e;border:0;padding:13px;width:100%;border-radius:10px;fo
 <input type="date" id="date" value="2026-12-24">
 
 <button onclick="search()">Search Trains</button>
-
 <div id="result"></div>
 
 <script>
@@ -35,13 +35,13 @@ let from = document.getElementById("from").value;
 let date = document.getElementById("date").value;
 let html = "<h3>"+from+" → Chennai | "+date+"</h3>";
 if(from=="Coimbatore"){
-html += "<div class='card'><b>12676 Kovai Express</b><br>06:10 AM → 01:45 PM<br>Day Train</div>";
-html += "<div class='card'><b>12640 Cheran Express</b><br>10:00 PM → 05:05 AM<br>Night Train</div>";
-html += "<div class='card'><b>20627 Vande Bharat</b><br>06:15 AM → 01:40 PM<br>Fastest</div>";
+html += "<div class='card'><b>12676 Kovai Express</b><br>06:10 AM → 01:45 PM<br>Day Train<br><b>₹160 Sleeper | ₹480 AC</b><a class='book' href='https://www.irctc.co.in/nget/train-search' target='_blank'>Book on 【entity-IRCTC¦canonical_name=IRCTC】 →</a></div>";
+html += "<div class='card'><b>12640 Cheran Express</b><br>10:00 PM → 05:05 AM<br>Night Train<br><b>₹180 Sleeper | ₹520 AC</b><a class='book' href='https://www.irctc.co.in/nget/train-search' target='_blank'>Book on 【entity-IRCTC¦canonical_name=IRCTC】 →</a></div>";
+html += "<div class='card'><b>20627 Vande Bharat</b><br>06:15 AM → 01:40 PM<br>Fastest<br><b>₹755 Chair Car | ₹1425 Exec</b><a class='book' href='https://www.irctc.co.in/nget/train-search' target='_blank'>Book on 【entity-IRCTC¦canonical_name=IRCTC】 →</a></div>";
 } else {
-html += "<div class='card'><b>12632 Nellai Express</b><br>07:15 PM → 04:15 AM<br>Night Train</div>";
-html += "<div class='card'><b>12666 Cape - Tambaram Express</b><br>04:00 PM → 05:10 AM<br>Daily</div>";
-html += "<div class='card'><b>16106 Tiruchendur - Chennai Express</b><br>05:05 PM → 06:15 AM<br>Via Tirunelveli</div>";
+html += "<div class='card'><b>12632 Nellai Express</b><br>07:15 PM → 04:15 AM<br>Night Train<br><b>₹210 Sleeper | ₹560 AC</b><a class='book' href='https://www.irctc.co.in/nget/train-search' target='_blank'>Book on 【entity-IRCTC¦canonical_name=IRCTC】 →</a></div>";
+html += "<div class='card'><b>12666 Cape - Tambaram Express</b><br>04:00 PM → 05:10 AM<br>Daily<br><b>₹200 Sleeper | ₹540 AC</b><a class='book' href='https://www.irctc.co.in/nget/train-search' target='_blank'>Book on 【entity-IRCTC¦canonical_name=IRCTC】 →</a></div>";
+html += "<div class='card'><b>16106 Tiruchendur - Chennai Express</b><br>05:05 PM → 06:15 AM<br>Via Tirunelveli<br><b>₹195 Sleeper | ₹525 AC</b><a class='book' href='https://www.irctc.co.in/nget/train-search' target='_blank'>Book on IRCTC →</a></div>";
 }
 document.getElementById("result").innerHTML = html;
 }
