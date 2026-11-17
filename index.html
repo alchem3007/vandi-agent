@@ -5,36 +5,47 @@
 <title>Vandi Agent</title>
 <style>
 body{font-family:sans-serif;background:#0f172a;color:white;padding:16px}
-.card{background:white;color:black;padding:16px;border-radius:12px;margin-top:12px}
-button{background:#22c55e;border:0;padding:12px;width:100%;border-radius:10px;font-size:16px;font-weight:bold}
+select,input{padding:12px;width:100%;border-radius:8px;margin:6px 0}
+.card{background:white;color:black;padding:14px;border-radius:12px;margin-top:12px}
+button{background:#22c55e;border:0;padding:13px;width:100%;border-radius:10px;font-size:16px;font-weight:bold;margin-top:10px}
 </style>
 </head>
 <body>
 <h1>🚆 Vandi Agent</h1>
-<p>Coimbatore → Chennai</p>
 
-<label>Date:</label><br>
-<input type="date" value="2026-12-24" style="padding:10px;width:100%;border-radius:8px"><br><br>
+<label>From:</label>
+<select id="from">
+<option value="Coimbatore">Coimbatore</option>
+<option value="Tirunelveli">Tirunelveli</option>
+</select>
 
-<div class="card">
-<b>12676 Kovai Express</b><br>
-06:10 AM → 01:45 PM<br>
-₹ 160 - Sleeper | ₹ 480 - AC
-</div>
+<label>To:</label>
+<select><option>Chennai</option></select>
 
-<div class="card">
-<b>12640 Cheran Express</b><br>
-10:00 PM → 05:05 AM<br>
-Night Train - Best for family
-</div>
+<label>Date:</label>
+<input type="date" id="date" value="2026-12-24">
 
-<div class="card">
-<b>20627 Vande Bharat</b><br>
-06:15 AM → 01:40 PM<br>
-Fastest - AC Chair Car
-</div>
+<button onclick="search()">Search Trains</button>
 
-<br>
-<button>Check Availability</button>
+<div id="result"></div>
+
+<script>
+function search(){
+let from = document.getElementById("from").value;
+let date = document.getElementById("date").value;
+let html = "<h3>"+from+" → Chennai | "+date+"</h3>";
+if(from=="Coimbatore"){
+html += "<div class='card'><b>12676 Kovai Express</b><br>06:10 AM → 01:45 PM<br>Day Train</div>";
+html += "<div class='card'><b>12640 Cheran Express</b><br>10:00 PM → 05:05 AM<br>Night Train</div>";
+html += "<div class='card'><b>20627 Vande Bharat</b><br>06:15 AM → 01:40 PM<br>Fastest</div>";
+} else {
+html += "<div class='card'><b>12632 Nellai Express</b><br>07:15 PM → 04:15 AM<br>Night Train</div>";
+html += "<div class='card'><b>12666 Cape - Tambaram Express</b><br>04:00 PM → 05:10 AM<br>Daily</div>";
+html += "<div class='card'><b>16106 Tiruchendur - Chennai Express</b><br>05:05 PM → 06:15 AM<br>Via Tirunelveli</div>";
+}
+document.getElementById("result").innerHTML = html;
+}
+search();
+</script>
 </body>
 </html>
