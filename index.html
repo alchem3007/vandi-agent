@@ -27,6 +27,13 @@ small{color:#a3a3a3}
 <label>Date:</label>
 <input type="date" id="date" value="2026-12-24">
 
+  <div style="margin:10px 0">
+<p style="margin:5px 0">🔥 Popular Routes:</p>
+<button style="background:#334155;color:white;padding:8px;margin:3px;border-radius:20px;font-size:13px;width:auto" onclick="quick('Coimbatore Junction','Chennai Central')">Coimbatore → Chennai</button>
+<button style="background:#334155;color:white;padding:8px;margin:3px;border-radius:20px;font-size:13px;width:auto" onclick="quick('New Delhi','Mumbai Central')">Delhi → Mumbai</button>
+<button style="background:#334155;color:white;padding:8px;margin:3px;border-radius:20px;font-size:13px;width:auto" onclick="quick('Bangalore City','Chennai Central')">Bangalore → Chennai</button>
+<button style="background:#334155;color:white;padding:8px;margin:3px;border-radius:20px;font-size:13px;width:auto" onclick="quick('Madurai Junction','Chennai Central')">Madurai → Chennai</button>
+</div>
 <button onclick="search()">Search Trains</button>
 <div id="result"></div>
 
@@ -42,6 +49,11 @@ let stations = [
 let dl = document.getElementById("stations");
 stations.forEach(s=>{ let o=document.createElement("option"); o.value=s; dl.appendChild(o); });
 
+  function quick(f,t){
+document.getElementById("from").value=f;
+document.getElementById("to").value=t;
+search();
+}
 function bookTrain(details){
 navigator.clipboard.writeText(details);
 alert("Copied: " + details + "\nIRCTC la paste pannidu!");
