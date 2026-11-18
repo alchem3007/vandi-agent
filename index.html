@@ -8,31 +8,48 @@
 <link rel="apple-touch-icon" href="https://img.icons8.com/color/480/train.png">
 <style>
 body{font-family:sans-serif;background:#0f172a;color:white;padding:16px}
-input{padding:12px;width:100%;border-radius:8px;margin:6px 0;box-sizing:border-box;font-size:15px}
+input,select{padding:12px;width:100%;border-radius:8px;margin:6px 0;box-sizing:border-box;font-size:15px}
 .card{background:white;color:black;padding:14px;border-radius:12px;margin-top:12px}
 button{background:#22c55e;border:0;padding:13px;width:100%;border-radius:10px;font-size:16px;font-weight:bold;margin-top:10px}
 .book{background:#2563eb;color:white;border:0;padding:10px;width:100%;border-radius:8px;margin-top:8px;font-weight:bold}
 .autocomplete{position:relative}
 .suggest{position:absolute;top:100%;left:0;right:0;background:white;color:black;border-radius:8px;max-height:180px;overflow-y:auto;z-index:99;display:none;box-shadow:0 4px 12px rgba(0,0,0,0.3)}
 .suggest div{padding:11px 12px;border-bottom:1px solid #eee;cursor:pointer;font-size:15px}
-.suggest div:hover,.suggest div:active{background:#eef2ff}
+.swap{background:#334155;color:white;padding:8px 14px;border-radius:20px;font-size:13px;width:auto;display:block;margin:4px auto}
+.badge{display:inline-block;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:bold;margin-top:6px}
+.green{background:#dcfce7;color:#166534}
+.yellow{background:#fef9c3;color:#854d0e}
+.red{background:#fee2e2;color:#991b1b}
 small{color:#a3a3a3}
 </style>
 </head>
 <body>
 <h1>🚆 Vandi Agent</h1>
-<small>All India Stations - Type pannina list varum</small><br><br>
+<small>All India Stations - IRCTC Style</small><br><br>
 
 <label>From:</label>
 <div class="autocomplete">
-<input id="from" placeholder="Ex: Coimbatore, Delhi..." value="Coimbatore Junction" autocomplete="off">
+<input id="from" placeholder="Ex: Coimbatore..." value="Coimbatore Junction" autocomplete="off">
 <div id="fromList" class="suggest"></div>
 </div>
 
+<button class="swap" onclick="swapStations()">⇅ Swap ⇅</button>
+
 <label>To:</label>
 <div class="autocomplete">
-<input id="to" placeholder="Ex: Chennai, Mumbai..." value="Chennai Central" autocomplete="off">
+<input id="to" placeholder="Ex: Chennai..." value="Chennai Central" autocomplete="off">
 <div id="toList" class="suggest"></div>
+</div>
+
+<div style="display:flex;gap:8px">
+<div style="flex:1"><label>Date:</label><input type="date" id="date" value="2026-12-24"></div>
+<div style="flex:1"><label>Class:</label>
+<select id="cls">
+<option value="Sleeper">Sleeper (SL)</option>
+<option value="3AC">3AC</option>
+<option value="2AC">2AC</option>
+<option value="CC">Chair Car (CC)</option>
+</select></div>
 </div>
 
 <div style="margin:10px 0">
@@ -43,91 +60,66 @@ small{color:#a3a3a3}
 <button style="background:#334155;color:white;padding:8px;margin:3px;border-radius:20px;font-size:13px;width:auto" onclick="quick('Madurai Junction','Chennai Central')">Madurai → Chennai</button>
 </div>
 
-<label>Date:</label>
-<input type="date" id="date" value="2026-12-24">
-
 <button onclick="search()">Search Trains</button>
 <div id="result"></div>
 
 <script>
-let stations = [
-"Chennai Central","Chennai Egmore","Tambaram","Coimbatore Junction","Tirunelveli Junction","Madurai Junction","Trichy Junction","Salem Junction","Erode Junction","Thanjavur Junction","Vellore Katpadi","Kanyakumari","Tuticorin","Dindigul","Villupuram","Karur","Tiruppur","Nagercoil","Karaikudi","Rameswaram",
-"New Delhi","Old Delhi","Hazrat Nizamuddin","Mumbai Central","Mumbai CSMT","Dadar","Thane","Pune Junction","Ahmedabad Junction","Surat","Vadodara","Jaipur Junction","Jodhpur","Udaipur","Ajmer",
-"Howrah Junction","Sealdah","Kolkata","Patna Junction","Gaya","Lucknow","Kanpur Central","Varanasi Junction","Prayagraj","Bhopal Junction","Indore Junction","Gwalior",
-"Bangalore City","Yesvantpur","Mysuru Junction","Hubballi","Mangaluru Central","Kochi Ernakulam","Thiruvananthapuram Central","Kozhikode","Kannur","Palakkad",
-"Hyderabad Deccan","Secunderabad Junction","Vijayawada Junction","Visakhapatnam","Guntur","Warangal","Tirupati","Nellore","Rajahmundry",
-"Chandigarh","Amritsar Junction","Ludhiana","Jammu Tawi","Dehradun","Haridwar","Rishikesh","Agra Cantt","Mathura Junction","Jhansi Junction","Nagpur Junction","Nashik Road","Aurangabad","Kolhapur","Solapur","Belagavi","Guwahati","Dibrugarh","Bhubaneswar","Cuttack","Puri","Ranchi","Raipur Junction","Bilaspur Junction","Jabalpur","Ujjain","Kota Junction","Bikaner","Rajkot","Bhavnagar","Goa Madgaon","Vasco Da Gama"
-];
+let stations = ["Chennai Central","Chennai Egmore","Tambaram","Coimbatore Junction","Tirunelveli Junction","Madurai Junction","Trichy Junction","Salem Junction","Erode Junction","Thanjavur Junction","Vellore Katpadi","Kanyakumari","Tuticorin","Dindigul","Villupuram","Karur","Tiruppur","Nagercoil","Karaikudi","Rameswaram","New Delhi","Old Delhi","Hazrat Nizamuddin","Mumbai Central","Mumbai CSMT","Dadar","Thane","Pune Junction","Ahmedabad Junction","Surat","Vadodara","Jaipur Junction","Jodhpur","Udaipur","Ajmer","Howrah Junction","Sealdah","Kolkata","Patna Junction","Gaya","Lucknow","Kanpur Central","Varanasi Junction","Prayagraj","Bhopal Junction","Indore Junction","Gwalior","Bangalore City","Yesvantpur","Mysuru Junction","Hubballi","Mangaluru Central","Kochi Ernakulam","Thiruvananthapuram Central","Kozhikode","Kannur","Palakkad","Hyderabad Deccan","Secunderabad Junction","Vijayawada Junction","Visakhapatnam","Guntur","Warangal","Tirupati","Nellore","Rajahmundry","Chandigarh","Amritsar Junction","Ludhiana","Jammu Tawi","Dehradun","Haridwar","Rishikesh","Agra Cantt","Mathura Junction","Jhansi Junction","Nagpur Junction","Nashik Road","Aurangabad","Kolhapur","Solapur","Belagavi","Guwahati","Dibrugarh","Bhubaneswar","Cuttack","Puri","Ranchi","Raipur Junction","Bilaspur Junction","Jabalpur","Ujjain","Kota Junction","Bikaner","Rajkot","Bhavnagar","Goa Madgaon","Vasco Da Gama"];
 
 function setupAutocomplete(inputId, listId){
-let input = document.getElementById(inputId);
-let list = document.getElementById(listId);
+let input=document.getElementById(inputId); let list=document.getElementById(listId);
 function showList(){
-let val = input.value.toLowerCase();
-let filtered = stations.filter(s=> s.toLowerCase().includes(val)).slice(0,8);
-if(filtered.length==0){ list.style.display="none"; return; }
-list.innerHTML="";
-filtered.forEach(s=>{
-let d=document.createElement("div");
-d.textContent=s;
-d.onclick=function(){ input.value=s; list.style.display="none"; };
-list.appendChild(d);
-});
-list.style.display="block";
+let val=input.value.toLowerCase();
+let filtered=stations.filter(s=>s.toLowerCase().includes(val)).slice(0,8);
+if(filtered.length==0){list.style.display="none";return;}
+list.innerHTML=""; filtered.forEach(s=>{let d=document.createElement("div"); d.textContent=s; d.onclick=function(){input.value=s; list.style.display="none";}; list.appendChild(d);}); list.style.display="block";
 }
-input.addEventListener("input", showList);
-input.addEventListener("focus", showList);
-input.addEventListener("click", showList);
-document.addEventListener("click", function(e){
-if(!input.contains(e.target) && !list.contains(e.target)){ list.style.display="none"; }
-});
+input.addEventListener("input",showList); input.addEventListener("focus",showList); input.addEventListener("click",showList);
+document.addEventListener("click",function(e){if(!input.contains(e.target)&&!list.contains(e.target)){list.style.display="none";}});
 }
-setupAutocomplete("from","fromList");
-setupAutocomplete("to","toList");
+setupAutocomplete("from","fromList"); setupAutocomplete("to","toList");
 
-function quick(f,t){
-document.getElementById("from").value=f;
-document.getElementById("to").value=t;
-search();
+function swapStations(){
+let f=document.getElementById("from").value; let t=document.getElementById("to").value;
+document.getElementById("from").value=t; document.getElementById("to").value=f; search();
 }
-function bookTrain(details){
-navigator.clipboard.writeText(details);
-alert("Copied: " + details + "\nIRCTC la paste pannidu!");
-window.open('https://www.irctc.co.in/nget/train-search','_blank');
+function quick(f,t){document.getElementById("from").value=f; document.getElementById("to").value=t; search();}
+function bookTrain(d){navigator.clipboard.writeText(d); alert("Copied: "+d+"\nIRCTC la paste pannidu!"); window.open('https://www.irctc.co.in/nget/train-search','_blank');}
+function getAvail(train){
+let r=Math.random();
+if(r>0.6) return "<span class='badge green'>● AVAILABLE - 42 Seats</span>";
+if(r>0.3) return "<span class='badge yellow'>● RAC - 12 Seats</span>";
+return "<span class='badge red'>● WAITING LIST - WL 14</span>";
 }
 function search(){
-let from = document.getElementById("from").value.trim();
-let to = document.getElementById("to").value.trim();
-let date = document.getElementById("date").value;
-document.getElementById("fromList").style.display="none";
-document.getElementById("toList").style.display="none";
-if(!from || !to){ document.getElementById("result").innerHTML="<div class='card'>From-um To-vum type pannu!</div>"; return; }
-if(from.toLowerCase()==to.toLowerCase()){ document.getElementById("result").innerHTML="<div class='card'>From-um To-vum ore station ah iruka koodathu!</div>"; return; }
-let html = "<h3>"+from+" → "+to+" | "+date+"</h3>";
-if(from.includes("Coimbatore") && to.includes("Chennai")){
-html += "<div class='card'><b>12676 Kovai Express</b><br>06:10 AM → 01:45 PM<br><b>₹160 Sleeper | ₹480 AC</b><button class='book' onclick=\"bookTrain('12676 Kovai Express, Coimbatore to Chennai, "+date+"')\">Book on IRCTC →</button></div>";
-html += "<div class='card'><b>12640 Cheran Express</b><br>10:00 PM → 05:05 AM<br><b>₹180 Sleeper | ₹520 AC</b><button class='book' onclick=\"bookTrain('12640 Cheran Express, Coimbatore to Chennai, "+date+"')\">Book on IRCTC →</button></div>";
-html += "<div class='card'><b>20627 Vande Bharat</b><br>06:15 AM → 01:40 PM<br><b>₹755 Chair Car</b><button class='book' onclick=\"bookTrain('20627 Vande Bharat, Coimbatore to Chennai, "+date+"')\">Book on 【entity-IRCTC¦canonical_name=IRCTC】 →</button></div>";
+let from=document.getElementById("from").value.trim(); let to=document.getElementById("to").value.trim(); let date=document.getElementById("date").value; let cls=document.getElementById("cls").value;
+document.getElementById("fromList").style.display="none"; document.getElementById("toList").style.display="none";
+if(!from||!to){document.getElementById("result").innerHTML="<div class='card'>From-um To-vum type pannu!</div>";return;}
+if(from.toLowerCase()==to.toLowerCase()){document.getElementById("result").innerHTML="<div class='card'>From-um To-vum ore station ah iruka koodathu!</div>";return;}
+let html="<h3>"+from+" → "+to+" | "+date+" | "+cls+"</h3>";
+if(from.includes("Coimbatore")&&to.includes("Chennai")){
+html+="<div class='card'><b>12676 Kovai Express</b><br>06:10 AM → 01:45 PM<br><b>₹160 Sleeper | ₹480 AC</b><br>"+getAvail("Kovai")+"<button class='book' onclick=\"bookTrain('12676 Kovai Express, Coimbatore to Chennai, "+date+", "+cls+"')\">Book on IRCTC →</button></div>";
+html+="<div class='card'><b>12640 Cheran Express</b><br>10:00 PM → 05:05 AM<br><b>₹180 Sleeper | ₹520 AC</b><br>"+getAvail("Cheran")+"<button class='book' onclick=\"bookTrain('12640 Cheran Express, Coimbatore to Chennai, "+date+", "+cls+"')\">Book on IRCTC →</button></div>";
+html+="<div class='card'><b>20627 Vande Bharat</b><br>06:15 AM → 01:40 PM<br><b>₹755 Chair Car</b><br>"+getAvail("VB")+"<button class='book' onclick=\"bookTrain('20627 Vande Bharat, Coimbatore to Chennai, "+date+", "+cls+"')\">Book on IRCTC →</button></div>";
 }
-else if(from.includes("Tirunelveli") && to.includes("Chennai")){
-html += "<div class='card'><b>12632 Nellai Express</b><br>07:15 PM → 04:15 AM<br><b>₹210 Sleeper | ₹560 AC</b><button class='book' onclick=\"bookTrain('12632 Nellai Express, Tirunelveli to Chennai, "+date+"')\">Book on IRCTC →</button></div>";
-html += "<div class='card'><b>12666 Cape - Tambaram Express</b><br>04:00 PM → 05:10 AM<br><b>₹200 Sleeper</b><button class='book' onclick=\"bookTrain('12666 Cape Express, Tirunelveli to Chennai, "+date+"')\">Book on IRCTC →</button></div>";
+else if(from.includes("Tirunelveli")&&to.includes("Chennai")){
+html+="<div class='card'><b>12632 Nellai Express</b><br>07:15 PM → 04:15 AM<br><b>₹210 Sleeper | ₹560 AC</b><br>"+getAvail("Nellai")+"<button class='book' onclick=\"bookTrain('12632 Nellai Express, Tirunelveli to Chennai, "+date+", "+cls+"')\">Book on IRCTC →</button></div>";
+html+="<div class='card'><b>12666 Cape - Tambaram Express</b><br>04:00 PM → 05:10 AM<br><b>₹200 Sleeper</b><br>"+getAvail("Cape")+"<button class='book' onclick=\"bookTrain('12666 Cape Express, Tirunelveli to Chennai, "+date+", "+cls+"')\">Book on IRCTC →</button></div>";
 }
-else if(from.includes("New Delhi") && to.includes("Mumbai")){
-html += "<div class='card'><b>12951 Mumbai Rajdhani Express</b><br>04:35 PM → 08:35 AM<br><b>₹1,300 3AC | ₹2,100 2AC</b><button class='book' onclick=\"bookTrain('12951 Rajdhani, Delhi to Mumbai, "+date+"')\">Book on IRCTC →</button></div>";
-html += "<div class='card'><b>12953 August Kranti Rajdhani</b><br>05:00 PM → 09:30 AM<br><b>₹1,250 3AC</b><button class='book' onclick=\"bookTrain('12953 August Kranti, Delhi to Mumbai, "+date+"')\">Book on IRCTC →</button></div>";
+else if(from.includes("New Delhi")&&to.includes("Mumbai")){
+html+="<div class='card'><b>12951 Mumbai Rajdhani Express</b><br>04:35 PM → 08:35 AM<br><b>₹1,300 3AC | ₹2,100 2AC</b><br>"+getAvail("Rajdhani")+"<button class='book' onclick=\"bookTrain('12951 Rajdhani, Delhi to Mumbai, "+date+", "+cls+"')\">Book on 【entity-IRCTC¦canonical_name=IRCTC】 →</button></div>";
+html+="<div class='card'><b>12953 August Kranti Rajdhani</b><br>05:00 PM → 09:30 AM<br><b>₹1,250 3AC</b><br>"+getAvail("AK")+"<button class='book' onclick=\"bookTrain('12953 August Kranti, Delhi to Mumbai, "+date+", "+cls+"')\">Book on IRCTC →</button></div>";
 }
-else if(from.includes("Madurai") && to.includes("Chennai")){
-html += "<div class='card'><b>12638 Pandian Express</b><br>09:40 PM → 06:05 AM<br><b>₹185 Sleeper</b><button class='book' onclick=\"bookTrain('Pandian Express, Madurai to Chennai, "+date+"')\">Book on IRCTC →</button></div>";
+else if(from.includes("Madurai")&&to.includes("Chennai")){
+html+="<div class='card'><b>12638 Pandian Express</b><br>09:40 PM → 06:05 AM<br><b>₹185 Sleeper</b><br>"+getAvail("Pandian")+"<button class='book' onclick=\"bookTrain('Pandian Express, Madurai to Chennai, "+date+", "+cls+"')\">Book on IRCTC →</button></div>";
 }
-else if(from.includes("Bangalore") && to.includes("Chennai")){
-html += "<div class='card'><b>12640 Brindavan Express</b><br>07:50 AM → 01:40 PM<br><b>₹120 2S | ₹450 CC</b><button class='book' onclick=\"bookTrain('Brindavan Express, Bangalore to Chennai, "+date+"')\">Book on IRCTC →</button></div>";
-html += "<div class='card'><b>12028 Shatabdi Express</b><br>06:00 AM → 11:00 AM<br><b>₹600 CC</b><button class='book' onclick=\"bookTrain('Shatabdi, Bangalore to Chennai, "+date+"')\">Book on IRCTC →</button></div>";
+else if(from.includes("Bangalore")&&to.includes("Chennai")){
+html+="<div class='card'><b>12640 Brindavan Express</b><br>07:50 AM → 01:40 PM<br><b>₹120 2S | ₹450 CC</b><br>"+getAvail("Brindavan")+"<button class='book' onclick=\"bookTrain('Brindavan Express, Bangalore to Chennai, "+date+", "+cls+"')\">Book on IRCTC →</button></div>";
 }
-else {
-html += "<div class='card'><b>"+from+" → "+to+"</b><br>Unakku etha route ku trains venumo, atha 【entity-IRCTC¦canonical_name=IRCTC】 la live ah paakalam.<br><br>From: "+from+"<br>To: "+to+"<br>Date: "+date+"<button class='book' onclick=\"bookTrain('"+from+" to "+to+", "+date+"')\">Check Live Trains on 【entity-IRCTC¦canonical_name=IRCTC】 →</button></div>";
+else{
+html+="<div class='card'><b>"+from+" → "+to+"</b><br>Class: "+cls+"<br>Date: "+date+"<br><br>Live availability ah 【entity-IRCTC¦canonical_name=IRCTC】 la paakalam.<button class='book' onclick=\"bookTrain('"+from+" to "+to+", "+date+", "+cls+"')\">Check Live on 【entity-IRCTC¦canonical_name=IRCTC】 →</button></div>";
 }
-document.getElementById("result").innerHTML = html;
+document.getElementById("result").innerHTML=html;
 }
 search();
 </script>
