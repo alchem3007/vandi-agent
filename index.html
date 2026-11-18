@@ -86,10 +86,12 @@ document.getElementById("from").value=t; document.getElementById("to").value=f; 
 function quick(f,t){document.getElementById("from").value=f; document.getElementById("to").value=t; search();}
 function bookTrain(d){navigator.clipboard.writeText(d); alert("Copied: "+d+"\nIRCTC la paste pannidu!"); window.open('https://www.irctc.co.in/nget/train-search','_blank');}
 function getAvail(train){
-let r=Math.random();
-if(r>0.6) return "<span class='badge green'>● AVAILABLE - 42 Seats</span>";
-if(r>0.3) return "<span class='badge yellow'>● RAC - 12 Seats</span>";
-return "<span class='badge red'>● WAITING LIST - WL 14</span>";
+let key = train + document.getElementById("date").value + document.getElementById("cls").value;
+let h = 0;
+for(let i=0;i<key.length;i++){ h = (h*31 + key.charCodeAt(i)) % 100; }
+if(h % 3 == 0) return "<span class='badge green'>● AVAILABLE - 42 Seats (Demo)</span>";
+if(h % 3 == 1) return "<span class='badge yellow'>● RAC - 12 Seats (Demo)</span>";
+return "<span class='badge red'>● WAITING LIST - WL 14 (Demo)</span>";
 }
 function search(){
 let from=document.getElementById("from").value.trim(); let to=document.getElementById("to").value.trim(); let date=document.getElementById("date").value; let cls=document.getElementById("cls").value;
